@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referral Matcher — The And Way Therapy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1D9E75;
+    --teal-dark: #085041;
+    --teal-light: #E1F5EE;
+    --teal-mid: #9FE1CB;
+    --slate: #5F869A;
+    --slate-light: #E6F1FB;
+    --warm: #F1EFE8;
+    --border: #D3D1C7;
+    --text: #2C2C2A;
+    --text-muted: #888780;
+    --bg: #FAFAF8;
+    --white: #ffffff;
+    --amber: #EF9F27;
+    --amber-light: #FAEEDA;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  header {
+    background: var(--teal-dark);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .header-left h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: white;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .header-left p {
+    font-size: 13px;
+    color: var(--teal-mid);
+    margin-top: 2px;
+  }
+
+  .header-badge {
+    background: rgba(255,255,255,0.1);
+    color: var(--teal-mid);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 0;
+  }
+
+  .filters-section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filters-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .filter-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888780' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: var(--teal);
+  }
+
+  .summary-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .summary-pill {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .summary-pill strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .pill-available { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+  .pill-available strong { color: var(--teal-dark); }
+  .pill-waitlist { border-color: var(--amber); background: var(--amber-light); color: #633806; }
+  .pill-waitlist strong { color: #633806; }
+
+  .results { display: flex; flex-direction: column; gap: 10px; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 4px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .clinician-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border-left: 4px solid transparent;
+    transition: box-shadow 0.15s, transform 0.1s;
+  }
+
+  .clinician-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+  }
+
+  .clinician-card.available { border-left-color: var(--teal); }
+  .clinician-card.waitlist { border-left-color: var(--amber); opacity: 0.9; }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .card-body { flex: 1; min-width: 0; }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+
+  .card-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .status-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .badge-available { background: var(--teal-light); color: var(--teal-dark); }
+  .badge-waitlist { background: var(--amber-light); color: #633806; }
+
+  .card-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .card-meta span::before { content: '·'; margin-right: 10px; }
+  .card-meta span:first-child::before { display: none; }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 6px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    background: var(--warm);
+    color: var(--text-muted);
+    font-weight: 500;
+    border: 1px solid var(--border);
+  }
+
+  .tag.blue { background: var(--slate-light); color: #042C53; border-color: #B5D4F4; }
+  .tag.green { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-mid); }
+  .tag.inperson { background: #EAF3DE; color: #173404; border-color: #C0DD97; }
+
+  .card-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .card-rate {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal-dark);
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .no-results svg { display: block; margin: 0 auto 12px; opacity: 0.3; }
+  .no-results h3 { font-size: 16px; color: var(--text); margin-bottom: 6px; font-weight: 500; }
+  .no-results p { font-size: 13px; }
+
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .reset-btn:hover { background: var(--warm); color: var(--text); border-color: var(--text-muted); }
+
+  .filters-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .website-link {
+    font-size: 12px;
+    color: var(--teal);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .website-link:hover { text-decoration: underline; }
+
+  @media(max-width: 600px) {
+    header { padding: 1.2rem; }
+    .main { padding: 1.2rem 1rem 0; }
+    .filters-section { padding: 1.2rem; }
+    .filters-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>The And Way Therapy</h1>
+    <p>Referral Matcher — Internal Use Only</p>
+  </div>
+  <span class="header-badge">Intake Tool</span>
+</header>
+
+<div class="main">
+
+  <div class="filters-section">
+    <div class="filters-top">
+      <div class="filters-label">Filter by client needs</div>
+      <button class="reset-btn" onclick="resetFilters()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.31"></path></svg>
+        Reset
+      </button>
+    </div>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Insurance</label>
+        <select id="ins" onchange="render()">
+          <option value="any">Any insurance</option>
+          <option value="selfpay">Self-pay</option>
+          <option value="cigna_aetna">Cigna / Aetna</option>
+          <option value="bcbs">BCBS</option>
+          <option value="optum">Optum / United</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>State</label>
+        <select id="state" onchange="render()">
+          <option value="any">TX or FL</option>
+          <option value="TX">Texas only</option>
+          <option value="FL">Florida only</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Presenting issue</label>
+        <select id="issue" onchange="render()">
+          <option value="any">Any issue</option>
+          <option value="ocd">OCD</option>
+          <option value="emdr">EMDR / Trauma</option>
+          <option value="couples">Couples</option>
+          <option value="eating">Eating Disorder</option>
+          <option value="other">Other / General</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Client age</label>
+        <select id="clienttype" onchange="render()">
+          <option value="any">Adult or teen</option>
+          <option value="adult">Adult only</option>
+          <option value="teen">Teen okay</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Session format</label>
+        <select id="inperson" onchange="render()">
+          <option value="any">Virtual or in-person</option>
+          <option value="yes">In-person required</option>
+          <option value="virtual">Virtual only</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Complexity</label>
+        <select id="complexity" onchange="render()">
+          <option value="any">Any complexity</option>
+          <option value="complex">Complex okay</option>
+          <option value="simple">Less complex only</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-bar" id="summary-bar"></div>
+  <div class="results" id="results"></div>
+
+</div>
+
+<script>
+const clinicians = [
+  {
+    id:"kate", name:"Kate Balke", initials:"KB", avatarBg:"#E1F5EE", avatarColor:"#085041",
+    insurance:{selfpay:true, cigna_aetna:false, bcbs:true, optum:false},
+    states:["TX"],
+    issues:["ocd","emdr","other"],
+    couples:false, teens:true, teensNote:"Prefers adults",
+    inperson:false,
+    availability:"waitlist",
+    rate:"$150",
+    modalities:["EMDR","ERP"],
+    note:"Prefers adults. OCD and EMDR specialist.",
+    availability_detail:"Evenings",
+    complexOnly:false
+  },
+  {
+    id:"sarah", name:"Sarah Zhukov", initials:"SZ", avatarBg:"#E6F1FB", avatarColor:"#0C447C",
+    insurance:{selfpay:true, cigna_aetna:true, bcbs:true, optum:true},
+    states:["TX","FL"],
+    issues:["ocd","emdr","other"],
+    couples:true, teens:true,
+    inperson:false,
+    availability:"waitlist",
+    rate:"$150 / $175 couples",
+    modalities:["EMDR","ERP"],
+    note:"ADHD, grief, attachment, anger. Taking new clients after Feb 1.",
+    availability_detail:"Evenings, weekends",
+    complexOnly:false
+  },
+  {
+    id:"reagan", name:"Reagan", initials:"RL", avatarBg:"#FAEEDA", avatarColor:"#633806",
+    insurance:{selfpay:false, cigna_aetna:true, bcbs:false, optum:false},
+    states:["TX"],
+    issues:["emdr","other"],
+    couples:false, teens:false,
+    inperson:false,
+    availability:"waitlist",
+    rate:"$125",
+    modalities:["EMDR"],
+    note:"1 more M-TH spot, 2 more Fri spots.",
+    availability_detail:"Evenings",
+    complexOnly:false
+  },
+  {
+    id:"vanessa", name:"Vanessa McDonnell", initials:"VM", avatarBg:"#EAF3DE", avatarColor:"#27500A",
+    insurance:{selfpay:true, cigna_aetna:true, bcbs:false, optum:true},
+    states:["TX","FL"],
+    issues:["ocd","emdr","couples","other"],
+    couples:true, teens:true,
+    inperson:false,
+    availability:"available",
+    rate:"$150 / $165 couples",
+    modalities:["EMDR"],
+    note:"Trauma, veterans/military, couples. TX and FL.",
+    availability_detail:"Day and evening",
+    complexOnly:false
+  },
+  {
+    id:"riana", name:"Riana Fletcher", initials:"RF", avatarBg:"#EEEDFE", avatarColor:"#3C3489",
+    insurance:{selfpay:true, cigna_aetna:true, bcbs:true, optum:true},
+    states:["TX"],
+    issues:["emdr","other"],
+    couples:false, teens:false,
+    inperson:false,
+    availability:"waitlist",
+    rate:"$175",
+    modalities:["EMDR"],
+    note:"One or two self-pay spots open. Insurance waitlist.",
+    availability_detail:"School day time only",
+    complexOnly:false
+  },
+  {
+    id:"ruth", name:"Ruth Assi", initials:"RA", avatarBg:"#FAECE7", avatarColor:"#712B13",
+    insurance:{selfpay:false, cigna_aetna:true, bcbs:false, optum:false},
+    states:["TX"],
+    issues:["ocd","emdr","other"],
+    couples:false, teens:true,
+    inperson:false,
+    availability:"waitlist",
+    rate:"$150 / $175 teen",
+    modalities:["ACT","ERP","I-CBT","EMDR"],
+    note:"OCD, perinatal, EMDR trauma. Bilingual. Waitlist.",
+    availability_detail:"Sun-Wed day and evening",
+    complexOnly:false
+  },
+  {
+    id:"jackie", name:"Jackie Ward", initials:"JW", avatarBg:"#FBEAF0", avatarColor:"#72243E",
+    insurance:{selfpay:true, cigna_aetna:true, bcbs:false, optum:false},
+    states:["TX","FL"],
+    issues:["ocd","other"],
+    couples:false, teens:true,
+    inperson:false,
+    availability:"available",
+    rate:"$135 / $150 teen",
+    modalities:["ACT","ERP","I-CBT"],
+    note:"OCD specialist. TX and FL. Building caseload.",
+    availability_detail:"Flexible",
+    complexOnly:false
+  },
+  {
+    id:"marysa", name:"Marysa Luis", initials:"ML", avatarBg:"#F1EFE8", avatarColor:"#444441",
+    insurance:{selfpay:false, cigna_aetna:true, bcbs:false, optum:false},
+    states:["TX"],
+    issues:["other"],
+    couples:false, teens:false,
+    inperson:false,
+    availability:"available",
+    rate:"$125",
+    modalities:[],
+    note:"Attachment, relationships, ADHD, confidence, self esteem, trauma.",
+    availability_detail:"11am-7pm Mon-Thurs",
+    complexOnly:false
+  },
+  {
+    id:"kelsey", name:"Kelsey Blahnik", initials:"KB", avatarBg:"#085041", avatarColor:"#E1F5EE",
+    insurance:{selfpay:true, cigna_aetna:true, bcbs:false, optum:true},
+    states:["TX","FL"],
+    issues:["ocd","emdr","eating","other"],
+    couples:false, teens:false,
+    inperson:false,
+    availability:"waitlist",
+    rate:"$205",
+    modalities:["ACT","ERP","EMDR","I-CBT"],
+    note:"Last resort only. If all else fails.",
+    availability_detail:"School day time only",
+    complexOnly:false
+  },
+  {
+    id:"sally", name:"Sally Reyes", initials:"SR", avatarBg:"#B5D4F4", avatarColor:"#042C53",
+    insurance:{selfpay:true, cigna_aetna:true, bcbs:false, optum:false},
+    states:["TX"],
+    issues:["ocd","emdr","eating","other"],
+    couples:false, teens:false,
+    inperson:true, inpersonLocation:"Austin",
+    availability:"available",
+    rate:"$150",
+    modalities:["EMDR","ERP"],
+    note:"In-person in Austin. Building caseload.",
+    availability_detail:"Austin in-person + virtual TX",
+    complexOnly:false
+  },
+  {
+    id:"gogi", name:"Gogi", initials:"GG", avatarBg:"#C0DD97", avatarColor:"#173404",
+    insurance:{selfpay:true, cigna_aetna:true, bcbs:false, optum:false},
+    states:["TX"],
+    issues:["ocd","emdr","couples","eating","other"],
+    couples:true, teens:false,
+    inperson:true, inpersonLocation:"Dripping Springs",
+    availability:"available",
+    rate:"$170",
+    modalities:["ERP"],
+    note:"In-person Dripping Springs. EMDR pending June training. Less complex OCD cases only.",
+    availability_detail:"Dripping Springs in-person + virtual TX",
+    complexOnly:false, lessComplex:true
+  }
+];
+
+function match(c, ins, state, issue, clienttype, inperson, complexity) {
+  if(ins !== "any" && !c.insurance[ins]) return false;
+  if(state !== "any" && !c.states.includes(state)) return false;
+  if(issue === "ocd" && !c.issues.includes("ocd")) return false;
+  if(issue === "emdr" && !c.issues.includes("emdr")) return false;
+  if(issue === "couples" && !c.couples) return false;
+  if(issue === "eating" && !c.issues.includes("eating")) return false;
+  if(issue === "other" && !c.issues.includes("other")) return false;
+  if(clienttype === "teen" && !c.teens) return false;
+  if(inperson === "yes" && !c.inperson) return false;
+  if(inperson === "virtual" && c.inperson && !c.virtualAlso) return false;
+  if(complexity === "complex" && c.lessComplex) return false;
+  return true;
+}
+
+function resetFilters() {
+  ["ins","state","issue","clienttype","inperson","complexity"].forEach(id => {
+    document.getElementById(id).value = "any";
+  });
+  render();
+}
+
+function render() {
+  const ins = document.getElementById("ins").value;
+  const state = document.getElementById("state").value;
+  const issue = document.getElementById("issue").value;
+  const clienttype = document.getElementById("clienttype").value;
+  const inperson = document.getElementById("inperson").value;
+  const complexity = document.getElementById("complexity").value;
+
+  const matched = clinicians.filter(c => match(c,ins,state,issue,clienttype,inperson,complexity));
+  const available = matched.filter(c => c.availability === "available");
+  const waitlisted = matched.filter(c => c.availability === "waitlist");
+
+  const sb = document.getElementById("summary-bar");
+  sb.innerHTML = `
+    <div class="summary-pill pill-available"><strong>${available.length}</strong> available now</div>
+    <div class="summary-pill pill-waitlist"><strong>${waitlisted.length}</strong> waitlist</div>
+    <div class="summary-pill"><strong>${matched.length}</strong> total matches</div>
+  `;
+
+  const container = document.getElementById("results");
+
+  if(matched.length === 0) {
+    container.innerHTML = `<div class="no-results">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><path d="M8 15s1.5-2 4-2 4 2 4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+      <h3>No clinicians match these criteria</h3>
+      <p>Try adjusting the filters — or this client may need to go on the BCBS waitlist.</p>
+    </div>`;
+    return;
+  }
+
+  let html = "";
+
+  if(available.length > 0) {
+    html += `<div class="section-label">Available now (${available.length})</div>`;
+    available.forEach(c => { html += buildCard(c); });
+  }
+
+  if(waitlisted.length > 0) {
+    html += `<div class="section-label" style="margin-top:${available.length > 0 ? '1rem' : '0'}">Waitlist (${waitlisted.length})</div>`;
+    waitlisted.forEach(c => { html += buildCard(c); });
+  }
+
+  container.innerHTML = html;
+}
+
+function buildCard(c) {
+  const isWait = c.availability === "waitlist";
+  const stateTags = c.states.map(s => `<span class="tag">${s}</span>`).join("");
+  const modTags = c.modalities.map(m => `<span class="tag blue">${m}</span>`).join("");
+  const extraTags = [];
+  if(c.couples) extraTags.push(`<span class="tag">Couples</span>`);
+  if(c.teens) extraTags.push(`<span class="tag">Teens</span>`);
+  if(c.inperson) extraTags.push(`<span class="tag inperson">In-person: ${c.inpersonLocation}</span>`);
+  if(c.lessComplex) extraTags.push(`<span class="tag" style="background:#FCEBEB;color:#791F1F;border-color:#F7C1C1">Less complex OCD only</span>`);
+
+  return `<div class="clinician-card ${isWait ? 'waitlist' : 'available'}">
+    <div class="avatar" style="background:${c.avatarBg};color:${c.avatarColor}">${c.initials}</div>
+    <div class="card-body">
+      <div class="card-top">
+        <span class="card-name">${c.name}</span>
+        <span class="status-badge ${isWait ? 'badge-waitlist' : 'badge-available'}">${isWait ? 'Waitlist' : 'Available'}</span>
+      </div>
+      <div class="card-meta">
+        <span>${c.availability_detail}</span>
+        <span>${c.states.join(" &amp; ")}</span>
+      </div>
+      <div class="tags">${stateTags}${modTags}${extraTags.join("")}</div>
+      ${c.note ? `<p class="card-note">${c.note}</p>` : ""}
+    </div>
+    <div class="card-rate">${c.rate}</div>
+  </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
